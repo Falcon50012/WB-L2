@@ -8,6 +8,7 @@ import (
 	"strings"
 )
 
+// Read читает строки из файла/Stdin
 func Read(filename string, opts Options) ([]Record, error) {
 	var (
 		f   *os.File

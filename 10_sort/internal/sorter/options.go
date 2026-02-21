@@ -1,7 +1,8 @@
 package sorter
 
+// Options содержит параметры сортировки
 type Options struct {
-	Delimiter string // -t
+	Delimiter string // -d
 	Column    int    // -k
 	Numeric   bool   // -n
 	Reverse   bool   // -r

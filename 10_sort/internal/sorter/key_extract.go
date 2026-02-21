@@ -2,6 +2,7 @@ package sorter
 
 import "strings"
 
+// extractKey извлекает ключ сортировки из строки
 func extractKey(line, delimiter string, column int) string {
 	if column <= 0 {
 		return line

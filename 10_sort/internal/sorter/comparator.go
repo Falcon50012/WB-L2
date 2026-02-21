@@ -1,5 +1,6 @@
 package sorter
 
+// Compare возвращает функцию сравнения двух записей
 func Compare(opts Options) func(a, b Record) int {
 	return func(a, b Record) int {
 		var result int
@@ -24,6 +25,8 @@ func Compare(opts Options) func(a, b Record) int {
 	}
 }
 
+// cmp выполняет обобщённое сравнение значений
+// строкового или числового типа
 func cmp[T string | float64](a, b T) int {
 	if a < b {
 		return -1

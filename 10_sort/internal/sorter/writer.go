@@ -5,6 +5,7 @@ import (
 	"os"
 )
 
+// Write выводит отсортированные строки в Stdout
 func Write(records []Record) error {
 	writer := bufio.NewWriter(os.Stdout)
 

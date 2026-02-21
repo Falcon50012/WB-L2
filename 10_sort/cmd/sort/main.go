@@ -8,6 +8,7 @@ import (
 	"github.com/Falcon50012/WB-L2/10_sort/internal/sorter"
 )
 
+// main — точка входа в программу
 func main() {
 	var opts sorter.Options
 

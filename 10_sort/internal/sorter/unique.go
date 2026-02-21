@@ -1,5 +1,6 @@
 package sorter
 
+// Unique удаляет повторяющиеся строки из отсортированного списка
 func Unique(records []Record) []Record {
 	if len(records) == 0 {
 		return records

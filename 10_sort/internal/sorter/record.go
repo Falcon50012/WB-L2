@@ -1,5 +1,6 @@
 package sorter
 
+// Record представляет строку входных данных
 type Record struct {
 	Line  string
 	Key   string
