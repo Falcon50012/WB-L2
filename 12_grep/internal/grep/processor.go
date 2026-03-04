@@ -80,32 +80,41 @@ func (g *Grep) ProcessFile(w io.Writer, r io.Reader, fileName string, multiple b
 
 			end := lineNumber + g.cfg.After
 
-			if start <= blockEnd {
+			if start <= blockEnd+1 {
 				if end > blockEnd {
 					blockEnd = end
 				}
 			} else {
 				if printedInBlock {
-					fmt.Fprintln(w, "--")
+					if _, err := fmt.Fprintln(w, "--"); err != nil {
+						return matchCount, err
+					}
 				}
 				blockEnd = end
 			}
 
 			for _, b := range beforeBuf {
 				if b.num >= start && b.num > lastPrinted {
-					g.printLine(w, fileName, multiple, b.num, b.content, false)
+					if err := g.printLine(w, fileName, multiple, b.num, b.content, false); err != nil {
+						return matchCount, err
+					}
 					lastPrinted = b.num
 				}
 			}
 
 			if lineNumber > lastPrinted {
-				g.printLine(w, fileName, multiple, lineNumber, line, true)
+				if err := g.printLine(w, fileName, multiple, lineNumber, line, true); err != nil {
+					return matchCount, err
+				}
 				lastPrinted = lineNumber
 			}
 
 			printedInBlock = true
+
 		} else if lineNumber <= blockEnd && lineNumber > lastPrinted {
-			g.printLine(w, fileName, multiple, lineNumber, line, false)
+			if err := g.printLine(w, fileName, multiple, lineNumber, line, false); err != nil {
+				return matchCount, err
+			}
 			lastPrinted = lineNumber
 		}
 
@@ -128,22 +137,27 @@ func (g *Grep) ProcessFile(w io.Writer, r io.Reader, fileName string, multiple b
 	return matchCount, nil
 }
 
-func (g *Grep) printLine(w io.Writer, fileName string, multiple bool, num int, line []byte, match bool) {
-	if g.cfg.Count {
-		return
-	}
-
+func (g *Grep) printLine(w io.Writer, fileName string, multiple bool, num int, line []byte, match bool) error {
 	if multiple {
-		fmt.Fprintf(w, "%s:", fileName)
+		if _, err := fmt.Fprintf(w, "%s:", fileName); err != nil {
+			return err
+		}
 	}
 
 	if g.cfg.LineNumber {
 		if match {
-			fmt.Fprintf(w, "%d:%s\n", num, line)
+			if _, err := fmt.Fprintf(w, "%d:%s\n", num, line); err != nil {
+				return err
+			}
 		} else {
-			fmt.Fprintf(w, "%d-%s\n", num, line)
+			if _, err := fmt.Fprintf(w, "%d-%s\n", num, line); err != nil {
+				return err
+			}
 		}
 	} else {
-		fmt.Fprintf(w, "%s\n", line)
+		if _, err := fmt.Fprintf(w, "%s\n", line); err != nil {
+			return err
+		}
 	}
+	return nil
 }

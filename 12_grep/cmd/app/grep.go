@@ -48,7 +48,7 @@ func main() {
 		files = []string{"-"}
 	}
 
-	grep, err := grep.NewGrep(cfg)
+	g, err := grep.NewGrep(cfg)
 	if err != nil {
 		fmt.Fprintln(os.Stderr, err)
 		os.Exit(2)
@@ -56,6 +56,7 @@ func main() {
 
 	multiple := len(files) > 1
 	totalMatches := 0
+	hadOpenError := false
 
 	for _, name := range files {
 		var r io.Reader
@@ -66,22 +67,30 @@ func main() {
 			f, err = os.Open(name)
 			if err != nil {
 				fmt.Fprintln(os.Stderr, err)
+				hadOpenError = true
 				continue
 			}
 			r = f
 		}
 
-		count, err := grep.ProcessFile(os.Stdout, r, name, multiple)
+		count, err := g.ProcessFile(os.Stdout, r, name, multiple)
+
 		if f != nil {
-			if err := f.Close(); err != nil {
-				fmt.Fprintln(os.Stderr, "ошибка закрытия файла:", err)
+			if cerr := f.Close(); cerr != nil {
+				fmt.Fprintln(os.Stderr, "ошибка закрытия файла:", cerr)
 			}
 		}
+
 		if err != nil {
 			fmt.Fprintln(os.Stderr, err)
 			os.Exit(2)
 		}
+
 		totalMatches += count
+	}
+
+	if hadOpenError {
+		os.Exit(2)
 	}
 
 	if totalMatches == 0 {
